@@ -45,7 +45,6 @@ const seedAdmin = async () => {
   }
 };
 
-// Run the function
 seedAdmin();
 
 exports.loginUser = async (req, res) => {
