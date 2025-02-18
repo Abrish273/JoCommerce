@@ -33,7 +33,7 @@ exports.createProduct = async (req, res) => {
 // Read all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().sort({ createdAt: -1 });
     return res.status(200).json({ success: true, products });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -55,6 +55,32 @@ exports.getProductById = async (req, res) => {
   }
 };
 
+exports.searchProducts = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Query is required" });
+    }
+
+    // Case-insensitive and partial matching using regex
+    const products = await Product.find({
+      productName: { $regex: query, $options: "i" }, // 'i' makes it case-insensitive
+    }).limit(10); // Limit results to improve performance
+
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No products found" });
+    }
+
+    return res.status(200).json({ success: true, products });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Read products by category (man/woman)
 exports.getProductsByCategory = async (req, res) => {
   try {
@@ -64,7 +90,7 @@ exports.getProductsByCategory = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid category type" });
     }
-    const products = await Product.find({ productType: category });
+    const products = await Product.find({ productType: category }).sort({ createdAt: -1 });;
     return res.status(200).json({ success: true, products });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
