@@ -14,10 +14,11 @@ router.post(
   upload.array("productImages", 5),
   productController.createProduct
 );
-router.get("/", productController.getAllProducts);
-router.get("/search", productController.searchProducts);
+router.get("/", productController.getPaginatedProducts);
+// router.get("/", productController.getAllProducts);
+// router.get("/search", productController.searchProducts);
 router.get("/:id", productController.getProductById);
-router.get("/category/:category", productController.getProductsByCategory);
+// router.get("/category/:category", productController.getProductsByCategory);
 router.put(
   "/:id",
   authenticateUser,
